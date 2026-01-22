@@ -1,0 +1,33 @@
+// Mockad prisjämförelse - i verklig app: ersätt med riktiga API-anrop mot butikernas pris-API eller OpenFoodFacts, prisjämförelsedata etc.
+
+const stores = ["ICA", "Willys", "Coop", "Lidl"];
+
+function randomPrice(min: number, max: number) {
+  return Math.random() * (max - min) + min;
+}
+
+export async function getPricesForIngredient(ingredient: string): Promise<Record<string, number>> {
+  // Simulera liten latency
+  await new Promise((r) => setTimeout(r, 300));
+
+  // Basprisförslag beroende på ingrediens (enkel heuristik)
+  const base =
+    ingredient.toLowerCase().includes("lax") || ingredient.toLowerCase().includes("nötkött")
+      ? 60
+      : ingredient.toLowerCase().includes("kyckling")
+      ? 45
+      : ingredient.toLowerCase().includes("avokado") || ingredient.toLowerCase().includes("quinoa")
+      ? 35
+      : ingredient.toLowerCase().includes("pasta") || ingredient.toLowerCase().includes("tomat") || ingredient.toLowerCase().includes("ris")
+      ? 12
+      : 20;
+
+  const result: Record<string, number> = {};
+  for (const s of stores) {
+    // variation per butik
+    const modifier = s === "Lidl" ? 0.85 : s === "Willys" ? 0.9 : s === "ICA" ? 1.05 : 1.0;
+    const price = base * modifier * (0.9 + Math.random() * 0.4);
+    result[s] = Number(price.toFixed(2));
+  }
+  return result;
+}
